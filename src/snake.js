@@ -1,11 +1,14 @@
 /*
 
 */
-var Snake = (function() {
+WIBBLES.Snake = (function() {
 
     'use strict';
 
-    var Snake = function(pixiStage) {
+    var Snake = function(options) {
+        var that = this;
+        
+        var stage = options.stage;
 
         var directions = {
             'up':       'up',
@@ -13,14 +16,14 @@ var Snake = (function() {
             'left':     'left',
             'right':    'right'
         };
-
-        var that = this;
-        var stage = pixiStage;
+        
         var nibbleTexture = new PIXI.Texture.fromImage('resources/images/sprites/nibble.jpg');
         
-        var piecesOfSnake = [];
-        var xPositions = [];
-        var yPositions = [];
+        var sprites = {
+            xCells: [],
+            yCells: [],
+            piecesOfSnake: []            
+        };
 
         var timer = 0;
 
@@ -28,24 +31,6 @@ var Snake = (function() {
         var hasNewTail = false;
 
         that.direction = directions.right;
-
-        /*
-
-        */
-        this.init = function(initialLength){
-
-            numPieces = initialLength;
-
-            for(var i = 0; i < initialLength; i++){
-                piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
-                xPositions.push(50);
-                yPositions.push(50);
-
-                stage.addChild(piecesOfSnake[i]);
-            }
-
-            this.setupControls();
-        };
 
         /*
             Will have to change this for 2 players....
@@ -83,6 +68,29 @@ var Snake = (function() {
                 that.addPieces(4);
             });
         };
+        /*
+
+        */
+        var init = function(initialLength){
+
+            numPieces = initialLength;
+
+            for(var i = 0; i < initialLength; i++){
+                sprites.piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
+                
+                sprites.xCells.push(8);
+                sprites.yCells.push(8);
+
+                sprites.piecesOfSnake[i].scale.x = BLOCK_SIZE;
+                sprites.piecesOfSnake[i].scale.y = BLOCK_SIZE;
+
+                stage.addChild(sprites.piecesOfSnake[i]);
+            }
+
+            that.setupControls();
+        };
+
+        init(options.length || 1);
 
         /*
         */
@@ -97,12 +105,15 @@ var Snake = (function() {
                 var newTail = new PIXI.Sprite(nibbleTexture);
                 stage.addChild(newTail);
 
-                piecesOfSnake.push( newTail );
-                newTail.position.x = xPositions[lastIndex];
-                newTail.position.y = yPositions[lastIndex];
+                sprites.piecesOfSnake.push( newTail );
+                newTail.position.x = sprites.xCells[lastIndex] * BLOCK_SIZE;
+                newTail.position.y = sprites.yCells[lastIndex] * BLOCK_SIZE;
 
-                xPositions.push( xPositions[lastIndex] );
-                yPositions.push( yPositions[lastIndex] );
+                newTail.scale.x = BLOCK_SIZE;
+                newTail.scale.y = BLOCK_SIZE;
+
+                sprites.xCells.push( sprites.xCells[lastIndex] );
+                sprites.yCells.push( sprites.yCells[lastIndex] );
             }
 
             numPieces += numToAdd;
@@ -110,15 +121,28 @@ var Snake = (function() {
             hasNewTail = true;
         };
 
+        this.getHeadCellX = function(){
+            return sprites.xCells[0];
+        };
+
+        this.getHeadCellY = function(){
+            return sprites.yCells[0];
+        };
+
+        this.setGridPosition = function(y, x){
+            sprites.xCells[0] = x;
+            sprites.yCells[0] = y;
+        };
+
         var moveHoriz = function(dir){
 
             // add a new element to the head
-            xPositions.unshift(xPositions[0] + dir * BLOCK_SIZE);
-            yPositions.unshift(yPositions[0]);
+            sprites.xCells.unshift(sprites.xCells[0] + dir);
+            sprites.yCells.unshift(sprites.yCells[0]);
 
             // cut off the end
-            xPositions.length = numPieces;
-            yPositions.length = numPieces;                
+            sprites.xCells.length = numPieces;
+            sprites.yCells.length = numPieces;                
            
             hasNewTail = false;
         };
@@ -127,12 +151,12 @@ var Snake = (function() {
         */
         var moveVert = function(dir){
             // add a new element to the head
-            xPositions.unshift(xPositions[0]);
-            yPositions.unshift(yPositions[0] + dir * BLOCK_SIZE);
+            sprites.xCells.unshift(sprites.xCells[0]);
+            sprites.yCells.unshift(sprites.yCells[0] + dir);
 
             // cut off the end
-            xPositions.length = numPieces;
-            yPositions.length = numPieces;            
+            sprites.xCells.length = numPieces;
+            sprites.yCells.length = numPieces;            
            
             hasNewTail = false;     
         };
@@ -142,8 +166,8 @@ var Snake = (function() {
         */
         var updateSpritePos = function(){
             for(var i = 0; i < numPieces; i++){
-                piecesOfSnake[i].position.x = xPositions[i];
-                piecesOfSnake[i].position.y = yPositions[i];
+                sprites.piecesOfSnake[i].position.x = sprites.xCells[i] * BLOCK_SIZE;
+                sprites.piecesOfSnake[i].position.y = sprites.yCells[i] * BLOCK_SIZE;
             }
         };
         
