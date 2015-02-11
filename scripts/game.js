@@ -1,16 +1,10 @@
 /*
-	Manages the collisions between snakes and board/walls
-
-	.restartLevel();
-	.killSnake();
-	.nextLevel();
-	.gameOver();
+	Manages the game state
 */
-WIBBLES.Game = (function(){
-	'use strict';
+define(['underscore', 'Board'], function(_, Board){
 
 	var Game = function(){
-		var that = this;
+		var _this = this;
 
 		var snakes = [];
 		var board = null;
@@ -36,11 +30,11 @@ WIBBLES.Game = (function(){
 			board = b;
 
 			board.loaded = function(){
-				start();
+				_this.start();
 			};
 		};
 
-		var start = function(){
+		this.start = function(){
 			ready = true;
 		};
 
@@ -65,5 +59,4 @@ WIBBLES.Game = (function(){
 	};
 
 	return Game;
-
-}());
+});

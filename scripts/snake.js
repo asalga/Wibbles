@@ -1,13 +1,16 @@
 /*
+	Snake
 
+	TODO:
+		- fix block_size
 */
-WIBBLES.Snake = (function() {
+define(['PIXI', 'KeyboardJS'], function (PIXI, KeyboardJS) {
 
-    'use strict';
+    var Snake = function (options) {
 
-    var Snake = function(options) {
-        var that = this;
-        
+		var BLOCK_SIZE = 4;
+		var _this = this;
+
         var stage = options.stage;
 
         var directions = {
@@ -30,67 +33,66 @@ WIBBLES.Snake = (function() {
         var numPieces = 1;
         var hasNewTail = false;
 
-        that.direction = directions.right;
+        this.direction = directions.right;
 
         /*
             Will have to change this for 2 players....
         */
         this.setupControls = function(){
+
             KeyboardJS.on('up', function() {
-                if(that.direction !== directions.down){
-                    that.direction = 'up';    
+                if(_this.direction !== directions.down){
+                    _this.direction = 'up';    
                 }
             });
 
             KeyboardJS.on('down', function() {
-                if(that.direction !== directions.up){
-                    that.direction = 'down';
+                if(_this.direction !== directions.up){
+                    _this.direction = 'down';
                 }
             });
 
             KeyboardJS.on('left', function() {
-                if(that.direction !== directions.right){
-                    that.direction = 'left';    
+                if(_this.direction !== directions.right){
+                    _this.direction = 'left';    
                 }
             });
 
             KeyboardJS.on('right', function() {
-                if(that.direction !== directions.left){
-                    that.direction = 'right';    
+                if(_this.direction !== directions.left){
+                    _this.direction = 'right';    
                 }
             });
 
             KeyboardJS.on('a', function(){
-                that.addPiece(); 
+                _this.addPiece(); 
             });
 
             KeyboardJS.on('space', function() {
-                that.addPieces(4);
+                _this.addPieces(4);
             });
         };
-        /*
 
-        */
-        var init = function(initialLength){
+       	this.setupControls();
 
-            numPieces = initialLength;
+		/*
+	    */
+	    var init = function(initialLength){
 
-            for(var i = 0; i < initialLength; i++){
-                sprites.piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
-                
-                sprites.xCells.push(8);
-                sprites.yCells.push(8);
+	        numPieces = initialLength;
 
-                sprites.piecesOfSnake[i].scale.x = BLOCK_SIZE;
-                sprites.piecesOfSnake[i].scale.y = BLOCK_SIZE;
+	        for(var i = 0; i < initialLength; i++){
+	            sprites.piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
+	            
+	            sprites.xCells.push(8);
+	            sprites.yCells.push(8);
 
-                stage.addChild(sprites.piecesOfSnake[i]);
-            }
+	            sprites.piecesOfSnake[i].scale.x = BLOCK_SIZE;
+	            sprites.piecesOfSnake[i].scale.y = BLOCK_SIZE;
 
-            that.setupControls();
-        };
-
-        init(options.length || 1);
+	            stage.addChild(sprites.piecesOfSnake[i]);
+	        }
+	    };
 
         /*
         */
@@ -121,7 +123,10 @@ WIBBLES.Snake = (function() {
             hasNewTail = true;
         };
 
-        this.getHeadCellX = function(){
+	    init(options.length || 1);
+
+
+		this.getHeadCellX = function(){
             return sprites.xCells[0];
         };
 
@@ -133,7 +138,6 @@ WIBBLES.Snake = (function() {
             sprites.xCells[0] = x;
             sprites.yCells[0] = y;
         };
-
         var moveHoriz = function(dir){
 
             // add a new element to the head
@@ -170,8 +174,8 @@ WIBBLES.Snake = (function() {
                 sprites.piecesOfSnake[i].position.y = sprites.yCells[i] * BLOCK_SIZE;
             }
         };
-        
-        this.update = function(delta) {
+
+		this.update = function(delta) {
 
             timer += delta;
             if(timer < 100){
@@ -202,7 +206,7 @@ WIBBLES.Snake = (function() {
                 break;
             }
         };
-    };
-    
-    return Snake;
-})();
+	};
+
+	return Snake;
+});

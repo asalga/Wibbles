@@ -1,6 +1,5 @@
 module.exports = function(grunt){
 
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
@@ -8,12 +7,11 @@ module.exports = function(grunt){
     uglify: {
       build: {
         src: 'src/*',
-	dest: 'build/<%= pkg.name %>.min.js'
-      }      
-    }  
+        dest: 'build/<%= pkg.name %>.min.js'
+      }
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.registerTask('default', ['uglify']);
-
 };
