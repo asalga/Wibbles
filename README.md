@@ -1,9 +1,8 @@
-# Wibbles
+# Wibbles by Andor
 
 Clone of Nibbles...
 
-  - notes here
-
+  - A clone of QBasic Nibbles. Uses require.js.
 
 ### Version
 0.0.1
@@ -11,10 +10,9 @@ Clone of Nibbles...
 
 ### Todo's
 
- - Fix scaling
  - Add events
+ - Add lives
  - Add font text
-
 
 
 License
