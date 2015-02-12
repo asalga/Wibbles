@@ -87,15 +87,12 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				if (_this.direction !== directions.left) {
 					_this.direction = 'right';
 				}
-
-			});
-
-			KeyboardJS.on('a', function() {
-				_this.addPiece();
+				return false;
 			});
 
 			KeyboardJS.on('space', function() {
-				_this.addPieces(4);
+				_this.grow(4);
+				return false;
 			});
 		};
 
@@ -105,7 +102,7 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 
 		/*
 		 */
-		this.addPieces = function(numToAdd) {
+		this.grow = function(numToAdd) {
 			if (numToAdd < 1) {
 				return;
 			}
