@@ -3,12 +3,13 @@
 
 	Note: make sure to pass in PNG's since they are lossless.
 */
-define(function() {
-
+define('ImageLevelLoader', function() {
 
 	var ImageLevelLoader = function() {
 
 		/*
+			options:
+				levelPath
 		*/
 		this.load = function(options) {
 

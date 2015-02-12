@@ -1,7 +1,7 @@
 /*
 	This is Main, yo.
 */
-require(['PIXI', 'Snake', 'Board', 'Game'], function(PIXI, Snake, Board, Game) {
+require(['PIXI', 'Snake', 'Board', 'Game', 'settings'], function(PIXI, Snake, Board, Game, settings) {
 
     var lastTime = Date.now(),
 	    delta = 0,
@@ -10,9 +10,8 @@ require(['PIXI', 'Snake', 'Board', 'Game'], function(PIXI, Snake, Board, Game) {
     var renderer = null,
         stage = null;
 
-	var BLOCK_SIZE = 4;
-    var viewWidth = BLOCK_SIZE * 80;// WIBBLES.Settings.cols;
-    var viewHeight = BLOCK_SIZE * 48;//WIBBLES.Settings.rows;
+    var viewWidth = settings.blockSize * settings.boardColumns;
+    var viewHeight = settings.blockSize * settings.boardRows;
 
 	renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
 	document.body.appendChild(renderer.view);
