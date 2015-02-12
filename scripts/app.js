@@ -6,7 +6,7 @@ requirejs.config({
 		//app: 'main',
 		PIXI: '../libs/pixi',
 		jquery:  '../libs/jquery',
-		KeyboardJS: '../libs/KeyboardJS',
+		KeyboardJS: '../libs/keyboardjs',
 		underscore : '../libs/underscore'
 	},
 	shim: {
