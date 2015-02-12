@@ -66,24 +66,28 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				if (_this.direction !== directions.down) {
 					_this.direction = 'up';
 				}
+				return false;
 			});
 
 			KeyboardJS.on('down', function() {
 				if (_this.direction !== directions.up) {
 					_this.direction = 'down';
 				}
+				return false;
 			});
 
 			KeyboardJS.on('left', function() {
 				if (_this.direction !== directions.right) {
 					_this.direction = 'left';
 				}
+				return false;
 			});
 
 			KeyboardJS.on('right', function() {
 				if (_this.direction !== directions.left) {
 					_this.direction = 'right';
 				}
+
 			});
 
 			KeyboardJS.on('a', function() {
