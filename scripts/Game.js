@@ -14,6 +14,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings'], function(_,
 		var food = null;
 
 		var ready = false;
+		var isPaused = false;
 		
 		var stage = options.stage;
 
@@ -25,10 +26,19 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings'], function(_,
 			this.addSnake(snake);
 			this.setBoard(board);
 			this.addFood(food);
+
+			KeyboardJS.on('p', function() {
+				isPaused = !isPaused;
+				return false;
+			});
 		};
 
 		this.update = function(delta) {
 			if (ready === false) {
+				return;
+			}
+
+			if(isPaused){
 				return;
 			}
 
@@ -38,6 +48,10 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings'], function(_,
 
 			checkWallCollisions();
 			checkSnakeEatFood();
+		};
+
+		this.getIsPaused = function(){
+			return isPaused;
 		};
 
 		this.addSnake = function(s) {
@@ -78,6 +92,10 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings'], function(_,
 				var ry = Math.floor((Math.random() * (settings.boardRows - 2)) + 1);
 
 				food.setGridPosition(rx, ry);
+
+				var sound = new Howl({
+					urls: ['resources/audio/eat.mp3']
+				}).play();
 
 				snake.grow(4);
 			}

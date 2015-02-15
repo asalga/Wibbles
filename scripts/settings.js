@@ -9,5 +9,7 @@ define('settings', {
 
 	blockSize: 4,
 	boardColumns: 80,
-	boardRows: 48
+	boardRows: 48,
+
+	debugOn: true
 });

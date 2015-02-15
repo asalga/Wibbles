@@ -3,6 +3,8 @@
 
 	TODO:
 		- fix timer
+		- prevent input while game is paused
+		
 */
 define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, KeyboardJS) {
 
@@ -91,7 +93,9 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			});
 
 			KeyboardJS.on('space', function() {
-				_this.grow(4);
+				if(settings.debugOn){
+					_this.grow(4);
+				}
 				return false;
 			});
 		};
