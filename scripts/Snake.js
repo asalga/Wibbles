@@ -1,10 +1,5 @@
 /*
 	Snake
-
-	TODO:
-		- fix timer
-		- prevent input while game is paused
-		
 */
 define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, KeyboardJS) {
 
@@ -44,20 +39,12 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			for (var i = 0; i < initialLength; i++) {
 				sprites.piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
 
-				sprites.xCells.push(8);
-				sprites.yCells.push(8);
-
-				sprites.piecesOfSnake[i].scale.x = settings.blockSize;
-				sprites.piecesOfSnake[i].scale.y = settings.blockSize;
+				sprites.xCells.push(2);
+				sprites.yCells.push(21);
 
 				stage.addChild(sprites.piecesOfSnake[i]);
 			}
 		};
-
-		
-
-
-
 
 		/*
 		    Will have to change this for 2 players....
@@ -118,11 +105,11 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				stage.addChild(newTail);
 
 				sprites.piecesOfSnake.push(newTail);
-				newTail.position.x = sprites.xCells[lastIndex] * settings.blockSize;
-				newTail.position.y = sprites.yCells[lastIndex] * settings.blockSize;
+				newTail.position.x = sprites.xCells[lastIndex];// * settings.blockSize;
+				newTail.position.y = sprites.yCells[lastIndex];// * settings.blockSize;
 
-				newTail.scale.x = settings.blockSize;
-				newTail.scale.y = settings.blockSize;
+				//newTail.scale.x = settings.blockSize;
+				//newTail.scale.y = settings.blockSize;
 
 				sprites.xCells.push(sprites.xCells[lastIndex]);
 				sprites.yCells.push(sprites.yCells[lastIndex]);
@@ -131,6 +118,42 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			numPieces += numToAdd;
 
 			hasNewTail = true;
+		};
+
+		/*
+		*/
+		this.getPositionIterator = function(){
+
+			var Iterator = (function() {
+				var Iterator = function() {
+
+					var i = -1;
+					retVal = {
+						x: null,
+						y: null
+					};
+					var max = sprites.xCells.length;
+
+					this.hasNext = function(){
+						return i+1 < max;
+					};
+
+					this.getNext = function() {
+						i++;
+						
+						retVal = {
+							x: sprites.xCells[i],
+							y: sprites.yCells[i]
+						};
+
+						return retVal;
+					};
+				};
+
+				return Iterator;
+			}());
+
+			return new Iterator();
 		};
 
 		this.getHeadCellX = function() {
@@ -177,8 +200,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		*/
 		var updateSpritePos = function() {
 			for (var i = 0; i < numPieces; i++) {
-				sprites.piecesOfSnake[i].position.x = sprites.xCells[i] * settings.blockSize;
-				sprites.piecesOfSnake[i].position.y = sprites.yCells[i] * settings.blockSize;
+				sprites.piecesOfSnake[i].position.x = sprites.xCells[i];// * settings.blockSize;
+				sprites.piecesOfSnake[i].position.y = sprites.yCells[i];// * settings.blockSize;
 			}
 		};
 

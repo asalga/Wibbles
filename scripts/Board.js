@@ -1,7 +1,5 @@
 /*
 	Board
-
-	TODO:
 */
 define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoader, PIXI, settings) {
 
@@ -16,16 +14,13 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoa
 		var done = function(data) {
 			boardData = data.slice(0);
 
-			for (var y = 0; y < data.length; y++) {
-				for (var x = 0; x < data[y].length; x++) {
+			for (var r = 0; r < data.length; r++) {
+				for (var c = 0; c < data[r].length; c++) {
 
-					if (data[y][x] === 1) {
+					if (data[r][c] === 1) {
 						var sprite = new PIXI.Sprite(wallTexture);
-						sprite.position.x = x * settings.blockSize;
-						sprite.position.y = y * settings.blockSize;
-
-						sprite.scale.x = settings.blockSize;
-						sprite.scale.y = settings.blockSize;
+						sprite.position.x = c;
+						sprite.position.y = r;
 
 						stage.addChild(sprite);
 					}
@@ -36,12 +31,12 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoa
 
 		var imageLevelLoader = new ImageLevelLoader();
 		imageLevelLoader.load({
-			levelPath: 'resources/levels/empty.png',
+			levelPath: 'resources/levels/teeth.png',
 			done: done
 		});
 
-		this.getCell = function(y, x) {
-			return boardData[y][x];
+		this.getCell = function(row, col) {
+			return boardData[row][col];
 		};
 	};
 

@@ -1,5 +1,6 @@
 /*
-	Yummy food for the snake
+	TODO:
+		- use game generate food for first food position
 */
 define('Food', ['PIXI', 'settings'], function(PIXI, settings){
 
@@ -8,7 +9,7 @@ define('Food', ['PIXI', 'settings'], function(PIXI, settings){
 		var cellPosition = {x: -1, y: -1};
 		var stage = options.stage;
 
-		var foodTexture = new PIXI.Texture.fromImage('resources/images/sprites/nibble.jpg');
+		var foodTexture = new PIXI.Texture.fromImage('resources/images/sprites/food.jpg');
 
 		var sprite = new PIXI.Sprite(foodTexture);
 
@@ -16,11 +17,8 @@ define('Food', ['PIXI', 'settings'], function(PIXI, settings){
 			cellPosition.x = x;
 			cellPosition.y = y;
 
-			sprite.position.x = cellPosition.x * settings.blockSize;
-			sprite.position.y = cellPosition.y * settings.blockSize;
-
-			sprite.scale.x = settings.blockSize;
-			sprite.scale.y = settings.blockSize;
+			sprite.position.x = cellPosition.x;
+			sprite.position.y = cellPosition.y;
 		};
 
 		this.setGridPosition(20, 20);
