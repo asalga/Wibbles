@@ -7,7 +7,8 @@ requirejs.config({
 		PIXI: '../libs/pixi',
 		jquery:  '../libs/jquery',
 		KeyboardJS: '../libs/keyboardjs',
-		underscore : '../libs/underscore'
+		underscore : '../libs/underscore',
+		Howl: '../libs/howler'
 	},
 	shim: {
 		"underscore": {
