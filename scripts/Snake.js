@@ -39,8 +39,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			for (var i = 0; i < initialLength; i++) {
 				sprites.piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
 
-				sprites.xCells.push(2);
-				sprites.yCells.push(21);
+				sprites.xCells.push(0);
+				sprites.yCells.push(0);
 
 				stage.addChild(sprites.piecesOfSnake[i]);
 			}
@@ -105,11 +105,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				stage.addChild(newTail);
 
 				sprites.piecesOfSnake.push(newTail);
-				newTail.position.x = sprites.xCells[lastIndex];// * settings.blockSize;
-				newTail.position.y = sprites.yCells[lastIndex];// * settings.blockSize;
-
-				//newTail.scale.x = settings.blockSize;
-				//newTail.scale.y = settings.blockSize;
+				newTail.position.x = sprites.xCells[lastIndex];
+				newTail.position.y = sprites.yCells[lastIndex];
 
 				sprites.xCells.push(sprites.xCells[lastIndex]);
 				sprites.yCells.push(sprites.yCells[lastIndex]);
@@ -128,6 +125,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				var Iterator = function() {
 
 					var i = -1;
+
+					// TODO: fix. No need to create new object literal
 					retVal = {
 						x: null,
 						y: null
@@ -200,8 +199,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		*/
 		var updateSpritePos = function() {
 			for (var i = 0; i < numPieces; i++) {
-				sprites.piecesOfSnake[i].position.x = sprites.xCells[i];// * settings.blockSize;
-				sprites.piecesOfSnake[i].position.y = sprites.yCells[i];// * settings.blockSize;
+				sprites.piecesOfSnake[i].position.x = sprites.xCells[i];
+				sprites.piecesOfSnake[i].position.y = sprites.yCells[i];
 			}
 		};
 

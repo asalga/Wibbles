@@ -1,7 +1,10 @@
 /*
+	Game
+
 	Manages the game state
 */
-define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManager', 'KeyboardJS'], function(_, Board, Snake, Food, settings, SoundManager, KeyboardJS) {
+define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManager', 'KeyboardJS', 'levels'], 
+	function(_, Board, Snake, Food, settings, SoundManager, KeyboardJS, levels) {
 
 	var Game = function(options) {
 		var _this = this;
@@ -12,11 +15,12 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 
 		var ready = false;
 		var isPaused = false;
-		var isMuted = true;
 		
 		var stage = options.stage;
 		var soundManager;
-	
+
+		/*
+		*/
 		this.initGameKeys = function(){
 			KeyboardJS.on('p', function() {
 				isPaused = !isPaused;
@@ -24,21 +28,37 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 			});
 		};
 
+		/*
+		*/
 		this.init = function(){
-			snake = new Snake({stage: stage, length: 10});
-			board = new Board({stage: stage, done: function(){game.start();}});
+
+			snake = new Snake({
+				stage: stage,
+				length: 10
+			});
+
+			board = new Board({
+				stage: stage, 
+				done: function(){game.start();},
+				board: levels.levelData[0]
+			});
+
 			food = new Food({stage:stage});
+
 
 			this.addSnake(snake);
 			this.setBoard(board);
 			this.addFood(food);
+
+
 
 			soundManager = SoundManager.getInstance();
 
 			this.initGameKeys();
 		};
 	
-
+		/*
+		*/
 		this.update = function(delta) {
 			if (ready === false) {
 				return;
@@ -76,34 +96,44 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 			};
 		};
 
+		/*
+			Called when board has been loaded
+		*/
 		this.start = function() {
 			ready = true;
+
+			var startingPosition = board.getStartingPosition();
+			snake.setGridPosition(startingPosition.row, startingPosition.column);
+
+			setFoodRandomPos();
 		};
 
+		/*
+		*/
 		var resetLevel = function() {
-			snakes[0].setGridPosition(20, 15);
+			_this.start();
 		};
 
+		/*
+		*/
 		var checkSnakeEatFood = function(){
-			if(food === null){
+			if(food === null || snakes.length === 0){
 				return;
 			}
 
-			if(snakes === null){
-				return;
-			}
+			var snakeHeadCol = snakes[0].getHeadCellX();
+			var snakeHeadRow = snakes[0].getHeadCellY();
 
-			var snakeHeadX = snakes[0].getHeadCellX();
-			var snakeHeadY = snakes[0].getHeadCellY();
-
-			if(snakeHeadX === food.getCellX() && snakeHeadY === food.getCellY()){
-				
-				generateFood();
+			if(snakeHeadCol === food.getCellX() && snakeHeadRow === food.getCellY()){
+				//generateFood();
+				setFoodRandomPos();
 				soundManager.play('eat');
 				snake.grow(4);
 			}
 		};
 
+		/*
+		*/
 		var doesOverlapWithSnake = function(row, col){
 			var iter = snake.getPositionIterator();
 
@@ -119,14 +149,14 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 		};
 
 		var doesOverlapWithWalls = function(row, col){
-			return board.getCell(row, col) !== 0;
+			return board.getCell(row, col) === 'wall';
 		};
 
 		/*
 			Find a place on the board that isn't a wall, 
 			or part of the snake
 		*/
-		var generateFood = function(){
+		var setFoodRandomPos = function(){
 
 			var col, row;
 			var overlapsWithSnake;
@@ -139,7 +169,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 				overlapsWithSnake = doesOverlapWithSnake(row, col);
 				overlapsWithWall = doesOverlapWithWalls(row, col);
 
-			}while(overlapsWithSnake === true || overlapsWithWall === true);
+			} while(overlapsWithSnake === true || overlapsWithWall === true);
 
 			food.setGridPosition(col, row);
 		};
@@ -152,13 +182,10 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 				return;
 			}
 
-			var snakeHeadX = snakes[0].getHeadCellX();
-			var snakeHeadY = snakes[0].getHeadCellY();
+			var snakeHeadCol = snakes[0].getHeadCellX();
+			var snakeHeadRow = snakes[0].getHeadCellY();
 
-			// note, we are using columns, so Y is first.
-			var cell = board.getCell(snakeHeadY, snakeHeadX);
-
-			if (cell === 1) {
+			if (board.getCell(snakeHeadRow, snakeHeadCol) === 'wall') {
 				resetLevel();
 			}
 		};
