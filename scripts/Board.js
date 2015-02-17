@@ -1,7 +1,8 @@
 /*
 	Board
 */
-define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoader, PIXI, settings) {
+define('Board', ['ImageLevelLoader', 'PIXI', 'settings', 'boardMetaData'], 
+	function(ImageLevelLoader, PIXI, settings, boardMetaData) {
 
 	var Board = function(options) {
 		var _this = this;
@@ -10,6 +11,12 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoa
 
 		var wallTexture = new PIXI.Texture.fromImage('resources/images/sprites/wall.png');
 		var boardData = null;
+		var boardToLoad = options.board;
+
+		var startingRowColum = {
+			row: -1,
+			column: -1
+		};
 
 		var done = function(data) {
 			boardData = data.slice(0);
@@ -17,12 +24,17 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoa
 			for (var r = 0; r < data.length; r++) {
 				for (var c = 0; c < data[r].length; c++) {
 
-					if (data[r][c] === 1) {
+					if (data[r][c] === 'wall') {
 						var sprite = new PIXI.Sprite(wallTexture);
 						sprite.position.x = c;
 						sprite.position.y = r;
 
 						stage.addChild(sprite);
+					}
+					
+					if(data[r][c] === 'player'){
+						startingRowColum.row = r;
+						startingRowColum.column = c;
 					}
 				}
 			}
@@ -31,9 +43,13 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings'], function(ImageLevelLoa
 
 		var imageLevelLoader = new ImageLevelLoader();
 		imageLevelLoader.load({
-			levelPath: 'resources/levels/teeth.png',
+			levelPath: boardToLoad,
 			done: done
 		});
+
+		this.getStartingPosition = function(){
+			return startingRowColum;
+		};
 
 		this.getCell = function(row, col) {
 			return boardData[row][col];

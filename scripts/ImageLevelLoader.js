@@ -3,7 +3,7 @@
 
 	Note: make sure to pass in PNG's since they are lossless.
 */
-define('ImageLevelLoader', function() {
+define('ImageLevelLoader', ['boardMetaData'], function(boardMetaData) {
 
 	var ImageLevelLoader = function() {
 
@@ -52,12 +52,17 @@ define('ImageLevelLoader', function() {
 					var r = rawDataFlat[colIdx + 0];
 					var g = rawDataFlat[colIdx + 1];
 					var b = rawDataFlat[colIdx + 2];
-					// alpha is used
+					// alpha is not used
 
+					// TODO: fix
 					if (isWall(r, g, b)) {
-						returnedData[y][x] = 1;
-					} else {
-						returnedData[y][x] = 0;
+						returnedData[y][x] = 'wall';
+					}
+					else if(isPlayer(r, g, b)){
+						returnedData[y][x] = 'player';
+					}
+					else{
+						returnedData[y][x] = 'empty';
 					}
 				}
 
@@ -65,8 +70,18 @@ define('ImageLevelLoader', function() {
 			};
 		};
 
+		var isColor = function(r1, g1, b1, r2, g2, b2 ){
+			return (r1 === r2 && g1 === g2 && b1 === b2);
+		};
+
 		var isWall = function(r, g, b) {
-			return (r === 255 && g === 96 && b === 96);
+			var wallColor = boardMetaData.wall;
+			return isColor(r, g, b, wallColor.r, wallColor.g, wallColor.b );
+		};
+
+		var isPlayer = function(r, g, b) {
+			var playerColor = boardMetaData.player;
+			return isColor(r, g, b, playerColor.r, playerColor.g, playerColor.b );
 		};
 	};
 

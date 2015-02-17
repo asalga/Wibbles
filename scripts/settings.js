@@ -6,6 +6,7 @@ define('settings', {
 	fullscreen: false,
 	bgColor: 0x0000AA,
 
+	godMode: false,
 	numLives: 4,
 	blocksPerSecond: 0.5,
 

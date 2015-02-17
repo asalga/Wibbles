@@ -9,20 +9,21 @@ Clone of Nibbles...
 
 
 ### Todo's
-
+ - replace instances of x/y, row, col
  - Add events
+ - fix slow input
  - Add lives
  - Add font text
  - Add wall collision check for each snake
  - Make soundManager generic
  - fix timer
+ - fix dying
  - prevent input while game is paused
- - fix board loading from json
  - prevent reversing in previous direction
  - Make sure the entire canvas is always visible
+ - score
 
 License
 ----
-
  - CC, attrib, no $
  

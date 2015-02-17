@@ -1,4 +1,5 @@
 /*
+	Main
 */
 require(['PIXI', 'Game', 'settings'], function(PIXI, Game, settings) {
 

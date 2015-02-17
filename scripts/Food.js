@@ -1,6 +1,5 @@
 /*
-	TODO:
-		- use game generate food for first food position
+	Food
 */
 define('Food', ['PIXI', 'settings'], function(PIXI, settings){
 
