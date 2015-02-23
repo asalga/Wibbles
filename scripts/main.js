@@ -22,8 +22,9 @@ require(['PIXI', 'Game', 'settings'], function(PIXI, Game, settings) {
 
 		// ie) 48/80
 		var aspectRatio = settings.boardRows / settings.boardColumns;
+	
+		var clientAspectRatio = window.innerHeight / window.innerWidth;
 
-		// too narrow
 		if(clientAspectRatio > aspectRatio){
 			renderer.view.width = window.innerWidth;
 			renderer.view.height = aspectRatio * window.innerWidth;
