@@ -19,13 +19,26 @@ require(['PIXI', 'Game', 'settings'], function(PIXI, Game, settings) {
 		Make sure the entire canvas is always visible
 	*/
 	var resize = function(){
-		var aspectRatio = settings.boardRows / settings.boardColumns;
-	
-		renderer.view.width = window.innerWidth;
-		renderer.view.height = aspectRatio * window.innerWidth;
 
-		renderer.width = window.innerWidth;
-		renderer.height = renderer.view.height;		
+		// ie) 48/80
+		var aspectRatio = settings.boardRows / settings.boardColumns;
+
+		// too narrow
+		if(clientAspectRatio > aspectRatio){
+			renderer.view.width = window.innerWidth;
+			renderer.view.height = aspectRatio * window.innerWidth;
+
+			renderer.width = window.innerWidth;
+			renderer.height = renderer.view.height;
+		}
+		// too short
+		else{
+			renderer.view.height = window.innerHeight;
+			renderer.view.width = (1/aspectRatio) * window.innerHeight;
+			
+			renderer.height = window.innerHeight;
+			renderer.width = renderer.view.width;
+		}
 	};
 
 	game.init();

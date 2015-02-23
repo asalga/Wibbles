@@ -45,12 +45,9 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 
 			food = new Food({stage:stage});
 
-
 			this.addSnake(snake);
 			this.setBoard(board);
 			this.addFood(food);
-
-
 
 			soundManager = SoundManager.getInstance();
 
@@ -104,6 +101,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 
 			var startingPosition = board.getStartingPosition();
 			snake.setGridPosition(startingPosition.row, startingPosition.column);
+			snake.setDir('right');
 
 			setFoodRandomPos();
 		};
