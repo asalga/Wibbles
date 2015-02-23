@@ -163,10 +163,15 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			return sprites.yCells[0];
 		};
 
+		this.setDir = function(d){
+			this.direction = directions[d];
+		};
+
 		this.setGridPosition = function(y, x) {
 			sprites.xCells[0] = x;
 			sprites.yCells[0] = y;
 		};
+
 		var moveHoriz = function(dir) {
 
 			// add a new element to the head
