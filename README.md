@@ -1,5 +1,4 @@
 # Wibbles by Andor
-# Feb. 2015
 
 Clone of Nibbles...
 A clone of QBasic Nibbles. Uses require.js and pixi.js.
@@ -26,7 +25,5 @@ A clone of QBasic Nibbles. Uses require.js and pixi.js.
 
 
 ## Play
-[http://asalga.github.io/Wibbles/ http://asalga.github.io/Wibbles/]
+[Wibbles http://asalga.github.io/Wibbles/]
 
-
-if height of client area is less than ? 
