@@ -8,7 +8,8 @@ define('settings', {
 
 	godMode: false,
 	numLives: 4,
-	blocksPerSecond: 0.5,
+	blocksPerSecond: 16,
+	foodPerLevel: 3,
 
 	blockSize: 1,
 	boardColumns: 80,

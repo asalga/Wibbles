@@ -12,7 +12,6 @@ define('ImageLevelLoader', ['boardMetaData'], function(boardMetaData) {
 				levelPath
 		*/
 		this.load = function(options) {
-
 			var img = new Image();
 			img.src = options.levelPath;
 
