@@ -1,7 +1,5 @@
 /*
 	Game
-
-	Manages the game state
 */
 define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManager', 'KeyboardJS', 'levels'], 
 	function(_, Board, Snake, Food, settings, SoundManager, KeyboardJS, levels) {
@@ -19,6 +17,9 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 		var stage = options.stage;
 		var soundManager;
 
+		var foodEatenInLevel = 0;
+		var currentLevel = 0;
+
 		/*
 		*/
 		this.initGameKeys = function(){
@@ -34,19 +35,18 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 
 			snake = new Snake({
 				stage: stage,
-				length: 10
+				length: 3
 			});
 
 			board = new Board({
 				stage: stage, 
-				done: function(){game.start();},
-				board: levels.levelData[0]
+				done: function(){_this.start();},
+				board: levels.levelData[currentLevel]
 			});
 
 			food = new Food({stage:stage});
 
 			this.addSnake(snake);
-			this.setBoard(board);
 			this.addFood(food);
 
 			soundManager = SoundManager.getInstance();
@@ -85,14 +85,6 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 			food = f;
 		};
 
-		this.setBoard = function(b) {
-			board = b;
-
-			board.loaded = function() {
-				_this.start();
-			};
-		};
-
 		/*
 			Called when board has been loaded
 		*/
@@ -100,7 +92,8 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 			ready = true;
 
 			var startingPosition = board.getStartingPosition();
-			snake.setGridPosition(startingPosition.row, startingPosition.column);
+
+			snake.setBirthLocation(startingPosition.row, startingPosition.column);
 			snake.setDir('right');
 
 			setFoodRandomPos();
@@ -123,11 +116,33 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 			var snakeHeadRow = snakes[0].getHeadCellY();
 
 			if(snakeHeadCol === food.getCellX() && snakeHeadRow === food.getCellY()){
-				//generateFood();
-				setFoodRandomPos();
+				foodEatenInLevel++;
 				soundManager.play('eat');
-				snake.grow(4);
+
+				if(foodEatenInLevel < settings.foodPerLevel){
+					setFoodRandomPos();
+					snake.grow(4);
+				}
+				else{
+					loadNextLevel();
+				}
 			}
+		};
+
+		var loadNextLevel = function(){
+			currentLevel++;
+			if(currentLevel > levels.levelData.length-1){
+				currentLevel = 0;
+			}
+
+			foodEatenInLevel = 0;
+
+			snake.reset();
+
+			board.load({
+				board: levels.levelData[currentLevel], 
+				done: function(){game.start();}
+			});
 		};
 
 		/*

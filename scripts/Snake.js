@@ -39,11 +39,37 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			for (var i = 0; i < initialLength; i++) {
 				sprites.piecesOfSnake.push(new PIXI.Sprite(nibbleTexture));
 
+				// TODO: comment where does the sprite get assigned its position?
 				sprites.xCells.push(0);
 				sprites.yCells.push(0);
 
 				stage.addChild(sprites.piecesOfSnake[i]);
 			}
+		};
+
+		/*
+			Where snake will start from
+		*/
+		this.setBirthLocation = function(row, column){
+			for(var i = 0; i < numPieces; i++){
+				sprites.yCells[i] = row;
+				sprites.xCells[i] = column;
+			}		
+		};
+
+		/*
+			Each time we load a new level, the snake length needs to be reset.
+		*/
+		this.reset = function(){
+			for(var i = 0; i < sprites.piecesOfSnake.length; i++){
+				stage.removeChild(sprites.piecesOfSnake[i]);
+			}
+
+			sprites.piecesOfSnake = [];
+			sprites.xCells = [];
+			sprites.yCells = [];
+
+			init(2);
 		};
 
 		/*
@@ -89,7 +115,6 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 
 		init(options.length || 1);
 		this.setupControls();
-
 
 		/*
 		 */
@@ -212,9 +237,11 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		this.update = function(delta) {
 
 			timer += delta;
-			if (timer < 100) {
+
+			if (timer < (1000.0/settings.blocksPerSecond) ){
 				return;
 			}
+			//alert(timer/settings.blocksPerSecond);
 
 			timer = 0;
 

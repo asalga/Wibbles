@@ -9,7 +9,6 @@ define('Food', ['PIXI', 'settings'], function(PIXI, settings){
 		var stage = options.stage;
 
 		var foodTexture = new PIXI.Texture.fromImage('resources/images/sprites/food.jpg');
-
 		var sprite = new PIXI.Sprite(foodTexture);
 
 		this.setGridPosition = function(x, y){
