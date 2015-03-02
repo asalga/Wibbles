@@ -13,7 +13,8 @@ define('settings', {
 
 	blockSize: 1,
 	boardColumns: 80,
-	boardRows: 48,
+	// first two rows are for the hud/score
+	boardRows: 50,
 
 	debugOn: true
 });

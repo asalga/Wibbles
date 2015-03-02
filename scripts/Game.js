@@ -1,8 +1,8 @@
 /*
 	Game
 */
-define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManager', 'KeyboardJS', 'levels'], 
-	function(_, Board, Snake, Food, settings, SoundManager, KeyboardJS, levels) {
+define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'SoundManager', 'KeyboardJS', 'levels'], 
+	   function(_, Board, Snake, Hud, Food, settings, SoundManager, KeyboardJS, levels) {
 
 	var Game = function(options) {
 		var _this = this;
@@ -10,6 +10,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 		var snakes = [];
 		var board = null;
 		var food = null;
+		var hud;
 
 		var ready = false;
 		var isPaused = false;
@@ -19,7 +20,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 
 		var foodEatenInLevel = 0;
 		var currentLevel = 0;
-
+		
 		/*
 		*/
 		this.initGameKeys = function(){
@@ -32,6 +33,8 @@ define('Game', ['underscore', 'Board', 'Snake', 'Food', 'settings', 'SoundManage
 		/*
 		*/
 		this.init = function(){
+
+			hud = new Hud({stage: stage});
 
 			snake = new Snake({
 				stage: stage,

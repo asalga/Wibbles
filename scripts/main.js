@@ -5,8 +5,8 @@ require(['PIXI', 'Game', 'settings'], function(PIXI, Game, settings) {
 
 	var lastTime = Date.now(), now;
 
-	var viewWidth = settings.blockSize * settings.boardColumns;
-	var viewHeight = settings.blockSize * settings.boardRows;
+	var viewWidth = settings.boardColumns;
+	var viewHeight = settings.boardRows;
 
 	var stage = new PIXI.Stage(settings.bgColor);
 
@@ -14,30 +14,33 @@ require(['PIXI', 'Game', 'settings'], function(PIXI, Game, settings) {
 	document.body.appendChild(renderer.view);
 
 	var game = new Game({stage: stage});
-
+	
 	/*
-		Make sure the entire canvas is always visible
+		Borders always need to be visible for proper gameplay, so
+		we scale the game board to keep the entire game always visible.
 	*/
 	var resize = function(){
-
-		// ie) 48/80
-		var aspectRatio = settings.boardRows / settings.boardColumns;
+		// ie) 48/80 (0.6)
+		var gameAspectRatio = viewHeight / viewWidth;
+		var innerWidth = window.innerWidth;
+		var innerHeight = window.innerHeight;
 	
-		var clientAspectRatio = window.innerHeight / window.innerWidth;
+		var clientAspectRatio = innerHeight / innerWidth;
 
-		if(clientAspectRatio > aspectRatio){
-			renderer.view.width = window.innerWidth;
-			renderer.view.height = aspectRatio * window.innerWidth;
+		// User made the window too narrow
+		if(clientAspectRatio > gameAspectRatio){
+			renderer.view.width = innerWidth;
+			renderer.view.height = gameAspectRatio * innerWidth;
 
-			renderer.width = window.innerWidth;
+			renderer.width = innerWidth;
 			renderer.height = renderer.view.height;
 		}
-		// too short
+		// too short (or equal)
 		else{
-			renderer.view.height = window.innerHeight;
-			renderer.view.width = (1/aspectRatio) * window.innerHeight;
+			renderer.view.height = innerHeight;
+			renderer.view.width = (1/gameAspectRatio) * innerHeight;
 			
-			renderer.height = window.innerHeight;
+			renderer.height = innerHeight;
 			renderer.width = renderer.view.width;
 		}
 	};
