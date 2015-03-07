@@ -168,6 +168,9 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			return board.getCell(row, col) === 'wall';
 		};
 
+		var getRandomInt = function(min, max){
+			return Math.floor(Math.random() * (max - min) + min);
+		};
 		/*
 			Find a place on the board that isn't a wall, 
 			or part of the snake
@@ -179,12 +182,13 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			var overlapsWithWall;
 
 			do{
-				row = Math.floor((Math.random() * (settings.boardRows - 2)) + 1);
-				col = Math.floor((Math.random() * (settings.boardColumns - 2)) + 1);
+				// 0,1 is hud area, 2 is the top of the board border
+				// [min, max)
+				row = getRandomInt(3, settings.boardRows - 1);
+				col = getRandomInt(0, settings.boardColumns);
 
 				overlapsWithSnake = doesOverlapWithSnake(row, col);
 				overlapsWithWall = doesOverlapWithWalls(row, col);
-
 			} while(overlapsWithSnake === true || overlapsWithWall === true);
 
 			food.setGridPosition(col, row);
