@@ -38,7 +38,8 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 
 			snake = new Snake({
 				stage: stage,
-				length: 3
+				length: 30,
+				game: _this
 			});
 
 			board = new Board({
@@ -104,7 +105,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 
 		/*
 		*/
-		var resetLevel = function() {
+		this.resetLevel = function() {
 			_this.start();
 		};
 
@@ -206,7 +207,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			var snakeHeadRow = snakes[0].getHeadCellY();
 
 			if (board.getCell(snakeHeadRow, snakeHeadCol) === 'wall') {
-				resetLevel();
+				_this.resetLevel();
 			}
 		};
 	};

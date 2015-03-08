@@ -5,6 +5,7 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 
 	var Snake = function(options) {
 		var _this = this;
+		var game = options.game;
 
 		var stage = options.stage;
 
@@ -197,31 +198,61 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			sprites.yCells[0] = y;
 		};
 
+		/*
+			O(n)
+
+			returns true if the head postion has the same position any
+			other part of the snake.
+		*/
+		var didEatSelf = function(futureRow, futureCol){
+			var ateSelf = false;
+
+			// don't include the head
+			var c = sprites.piecesOfSnake.length-2;
+			for( ;c > -1; c--){
+				if(sprites.yCells[c] === futureRow && sprites.xCells[c] === futureCol){
+				   	ateSelf = true;
+				}
+			}
+			return ateSelf;
+		};
+
 		var moveHoriz = function(dir) {
 
-			// add a new element to the head
-			sprites.xCells.unshift(sprites.xCells[0] + dir);
-			sprites.yCells.unshift(sprites.yCells[0]);
+			if( didEatSelf(sprites.yCells[0], sprites.xCells[0] + dir) ){
+				game.resetLevel();
+			}
+			else{
+				// add a new element to the head
+				sprites.xCells.unshift(sprites.xCells[0] + dir);
+				sprites.yCells.unshift(sprites.yCells[0]);
 
-			// cut off the end
-			sprites.xCells.length = numPieces;
-			sprites.yCells.length = numPieces;
+				// cut off the end
+				sprites.xCells.length = numPieces;
+				sprites.yCells.length = numPieces;
 
-			hasNewTail = false;
+				hasNewTail = false;
+			}
 		};
 
 		/*
 		 */
 		var moveVert = function(dir) {
-			// add a new element to the head
-			sprites.xCells.unshift(sprites.xCells[0]);
-			sprites.yCells.unshift(sprites.yCells[0] + dir);
+			
+			if( didEatSelf(sprites.yCells[0] + dir, sprites.xCells[0]) ){
+				game.resetLevel();
+			}
+			else{
+				// add a new element to the head
+				sprites.xCells.unshift(sprites.xCells[0]);
+				sprites.yCells.unshift(sprites.yCells[0] + dir);
 
-			// cut off the end
-			sprites.xCells.length = numPieces;
-			sprites.yCells.length = numPieces;
+				// cut off the end
+				sprites.xCells.length = numPieces;
+				sprites.yCells.length = numPieces;
 
-			hasNewTail = false;
+				hasNewTail = false;
+			}
 		};
 
 		/*
@@ -241,7 +272,6 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			if (timer < (1000.0/settings.blocksPerSecond) ){
 				return;
 			}
-			//alert(timer/settings.blocksPerSecond);
 
 			timer = 0;
 
