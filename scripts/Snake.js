@@ -29,7 +29,7 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		var numPieces = 1;
 		var hasNewTail = false;
 
-		this.direction = directions.right;
+		_this.direction = directions.right;
 
 		/*
 		 */
@@ -78,30 +78,34 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		*/
 		this.setupControls = function() {
 
-			KeyboardJS.on('up', function() {
-				if (_this.direction !== directions.down) {
-					_this.direction = 'up';
+			KeyboardJS.on('up', function(e) {
+				if (_this.direction !== directions.down && _this.direction !== directions.up) {
+					_this.direction = e.key.toLowerCase();
+					//console.log(">> UP");
 				}
 				return false;
 			});
 
-			KeyboardJS.on('down', function() {
-				if (_this.direction !== directions.up) {
-					_this.direction = 'down';
+			KeyboardJS.on('down', function(e) {
+				if (_this.direction !== directions.up && _this.direction !== directions.down) {
+					_this.direction = e.key.toLowerCase();
+					//console.log('>> ' , e.key, _this.direction);
 				}
 				return false;
 			});
 
-			KeyboardJS.on('left', function() {
-				if (_this.direction !== directions.right) {
-					_this.direction = 'left';
+			KeyboardJS.on('left', function(e) {
+				if (_this.direction !== directions.right && _this.direction !== directions.left) {
+					_this.direction = e.key.toLowerCase();
+					//console.log(">> LEFT");
 				}
 				return false;
 			});
 
-			KeyboardJS.on('right', function() {
-				if (_this.direction !== directions.left) {
-					_this.direction = 'right';
+			KeyboardJS.on('right', function(e) {
+				if (_this.direction !== directions.left && _this.direction !== directions.right) {
+					_this.direction = e.key.toLowerCase();
+					//console.log('>> ' , e.key, _this.direction);
 				}
 				return false;
 			});
@@ -265,6 +269,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			}
 		};
 
+		/*
+		*/
 		this.update = function(delta) {
 
 			timer += delta;
@@ -275,7 +281,7 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 
 			timer = 0;
 
-			switch (this.direction) {
+			switch (_this.direction) {
 				case 'left':
 					moveHoriz(-1);
 					updateSpritePos();

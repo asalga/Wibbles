@@ -38,7 +38,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 
 			snake = new Snake({
 				stage: stage,
-				length: 30,
+				length: 10,
 				game: _this
 			});
 
