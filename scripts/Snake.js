@@ -5,6 +5,7 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 
 	var Snake = function(options) {
 		var _this = this;
+		var game = options.game;
 
 		var stage = options.stage;
 
@@ -28,7 +29,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		var numPieces = 1;
 		var hasNewTail = false;
 
-		this.direction = directions.right;
+		_this.direction = directions.right;
+		_this.requestedDir = _this.direction;
 
 		/*
 		 */
@@ -77,32 +79,41 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		*/
 		this.setupControls = function() {
 
-			KeyboardJS.on('up', function() {
-				if (_this.direction !== directions.down) {
-					_this.direction = 'up';
+			KeyboardJS.on('up', function(e) {
+				if(e.key === 'Up'){
+					if (_this.direction !== directions.down) {
+						_this.requestedDir = e.key.toLowerCase();
+					}
+					return false;
 				}
-				return false;
 			});
 
-			KeyboardJS.on('down', function() {
-				if (_this.direction !== directions.up) {
-					_this.direction = 'down';
+			// 
+			KeyboardJS.on('down', function(e) {
+				if(e.key === 'Down'){
+					if (_this.direction !== directions.up){
+						_this.requestedDir = 'down';
+					}
+					return false;
 				}
-				return false;
 			});
 
-			KeyboardJS.on('left', function() {
-				if (_this.direction !== directions.right) {
-					_this.direction = 'left';
+			KeyboardJS.on('left', function(e) {
+				if(e.key === 'Left'){
+					if (_this.direction !== directions.right ){
+						_this.requestedDir = e.key.toLowerCase();
+					}
+					return false;
 				}
-				return false;
 			});
 
-			KeyboardJS.on('right', function() {
-				if (_this.direction !== directions.left) {
-					_this.direction = 'right';
+			KeyboardJS.on('right', function(e) {
+				if(e.key === 'Right'){
+					if (_this.direction !== directions.left) {
+						_this.requestedDir = e.key.toLowerCase();
+					}
+					return false;
 				}
-				return false;
 			});
 
 			KeyboardJS.on('space', function() {
@@ -197,31 +208,62 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			sprites.yCells[0] = y;
 		};
 
+		/*
+			O(n) linear speed. The longer the snake, the more tests 
+			we need to perform.
+
+			returns true if the head postion has the same position as any
+			other part of the snake.
+		*/
+		var didEatSelf = function(futureRow, futureCol){
+			var ateSelf = false;
+
+			// don't include the head
+			var c = sprites.piecesOfSnake.length-2;
+			for( ;c > -1; c--){
+				if(sprites.yCells[c] === futureRow && sprites.xCells[c] === futureCol){
+				   	ateSelf = true;
+				}
+			}
+			return ateSelf;
+		};
+
 		var moveHoriz = function(dir) {
 
-			// add a new element to the head
-			sprites.xCells.unshift(sprites.xCells[0] + dir);
-			sprites.yCells.unshift(sprites.yCells[0]);
+			if( didEatSelf(sprites.yCells[0], sprites.xCells[0] + dir) ){
+				game.resetLevel();
+			}
+			else{
+				// add a new element to the head
+				sprites.xCells.unshift(sprites.xCells[0] + dir);
+				sprites.yCells.unshift(sprites.yCells[0]);
 
-			// cut off the end
-			sprites.xCells.length = numPieces;
-			sprites.yCells.length = numPieces;
+				// cut off the end
+				sprites.xCells.length = numPieces;
+				sprites.yCells.length = numPieces;
 
-			hasNewTail = false;
+				hasNewTail = false;
+			}
 		};
 
 		/*
 		 */
 		var moveVert = function(dir) {
-			// add a new element to the head
-			sprites.xCells.unshift(sprites.xCells[0]);
-			sprites.yCells.unshift(sprites.yCells[0] + dir);
+			
+			if( didEatSelf(sprites.yCells[0] + dir, sprites.xCells[0]) ){
+				game.resetLevel();
+			}
+			else{
+				// add a new element to the head
+				sprites.xCells.unshift(sprites.xCells[0]);
+				sprites.yCells.unshift(sprites.yCells[0] + dir);
 
-			// cut off the end
-			sprites.xCells.length = numPieces;
-			sprites.yCells.length = numPieces;
+				// cut off the end
+				sprites.xCells.length = numPieces;
+				sprites.yCells.length = numPieces;
 
-			hasNewTail = false;
+				hasNewTail = false;
+			}
 		};
 
 		/*
@@ -234,6 +276,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			}
 		};
 
+		/*
+		*/
 		this.update = function(delta) {
 
 			timer += delta;
@@ -241,11 +285,16 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			if (timer < (1000.0/settings.blocksPerSecond) ){
 				return;
 			}
-			//alert(timer/settings.blocksPerSecond);
+
 
 			timer = 0;
 
-			switch (this.direction) {
+			if(_this.requestedDir !== null){
+				_this.direction = _this.requestedDir;
+				_this.requestedDir = null;
+			}
+
+			switch (_this.direction) {
 				case 'left':
 					moveHoriz(-1);
 					updateSpritePos();
