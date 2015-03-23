@@ -16,7 +16,8 @@ define('SoundManager', ['Howl', 'KeyboardJS'], function(Howl, KeyboardJS) {
 			//'poop': new Howl({urls: ['resources/audio/eat.mp3']})
 		};
 
-		KeyboardJS.on('m', function() {
+		// toggle audio
+		KeyboardJS.on('a', function() {
 			muted = !muted;
 			return false;
 		});

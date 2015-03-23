@@ -69,8 +69,6 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings', 'boardMetaData'],
 		};
 
 		this.load = function(options) {
-			//alert('load');
-
 			for(var i = 0; i < sprites.length; i++){
 				stage.removeChild(sprites[i]);
 			}

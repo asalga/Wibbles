@@ -48,7 +48,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 				board: levels.levelData[currentLevel]
 			});
 
-			food = new Food({stage:stage});
+			food = new Food({stage: stage, score: 0});
 
 			this.addSnake(snake);
 			this.addFood(food);
@@ -110,8 +110,14 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 		};
 
 		/*
+			After updating the snake position, check if the
+			snake head has overlapped with the food.
+
+			TODO: change to return Boolean?
 		*/
 		var checkSnakeEatFood = function(){
+
+			// TODO: why are we checking for snakes.length?
 			if(food === null || snakes.length === 0){
 				return;
 			}
@@ -119,12 +125,25 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			var snakeHeadCol = snakes[0].getHeadCellX();
 			var snakeHeadRow = snakes[0].getHeadCellY();
 
-			if(snakeHeadCol === food.getCellX() && snakeHeadRow === food.getCellY()){
+			// TODO: fix getCellX => getCellCol
+			// We totally ate some food.
+			if(snakeHeadCol === food.getColumn() && snakeHeadRow === food.getRow()){
+				
 				foodEatenInLevel++;
 				soundManager.play('eat');
+				snake.score += food.score;
+				hud.setScore(snake.score);
+
+				/// We just found out the snake ate something.
+				// - play sound
+				// - check if next level needs to load
+				// - update hud
+				// - fire event?
 
 				if(foodEatenInLevel < settings.foodPerLevel){
 					setFoodRandomPos();
+
+					// TODO: what should this be?
 					snake.grow(4);
 				}
 				else{
@@ -133,6 +152,9 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			}
 		};
 
+		/*
+			
+		*/
 		var loadNextLevel = function(){
 			currentLevel++;
 			if(currentLevel > levels.levelData.length-1){
@@ -150,6 +172,8 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 		};
 
 		/*
+			@return true if the given row and column overlaps
+			with any part of the snake.
 		*/
 		var doesOverlapWithSnake = function(row, col){
 			var iter = snake.getPositionIterator();
@@ -165,13 +189,21 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			return false;
 		};
 
+		/*
+			When finding a random position for the food,
+			make sure we don't place it on top of a wall.
+		*/
 		var doesOverlapWithWalls = function(row, col){
 			return board.getCell(row, col) === 'wall';
 		};
 
+		/*
+			TODO: move to a utils class
+		*/
 		var getRandomInt = function(min, max){
 			return Math.floor(Math.random() * (max - min) + min);
 		};
+
 		/*
 			Find a place on the board that isn't a wall, 
 			or part of the snake
@@ -193,6 +225,7 @@ define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'Soun
 			} while(overlapsWithSnake === true || overlapsWithWall === true);
 
 			food.setGridPosition(col, row);
+			food.score += 100;
 		};
 
 		/*
