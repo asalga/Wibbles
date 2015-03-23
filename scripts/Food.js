@@ -5,30 +5,31 @@ define('Food', ['PIXI', 'settings'], function(PIXI, settings){
 
 	var Food = function(options){
 		var _this = this;
-		var cellPosition = {x: -1, y: -1};
+		var cellPosition = {column: -1, row: -1};
 		var stage = options.stage;
+		this.score = options.score || 0;
 
 		var foodTexture = new PIXI.Texture.fromImage('resources/images/sprites/food.jpg');
 		var sprite = new PIXI.Sprite(foodTexture);
 
 		this.setGridPosition = function(x, y){
-			cellPosition.x = x;
-			cellPosition.y = y;
+			cellPosition.column = x;
+			cellPosition.row = y;
 
-			sprite.position.x = cellPosition.x;
-			sprite.position.y = cellPosition.y;
+			sprite.position.x = cellPosition.column;
+			sprite.position.y = cellPosition.row;
 		};
 
 		this.setGridPosition(20, 20);
 
 		stage.addChild(sprite);
 
-		this.getCellX = function(){
-			return cellPosition.x;
+		this.getColumn = function(){
+			return cellPosition.column;
 		};
 
-		this.getCellY = function(){
-			return cellPosition.y;
+		this.getRow = function(){
+			return cellPosition.row;
 		};
 	};
 

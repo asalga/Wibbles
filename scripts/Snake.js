@@ -1,12 +1,14 @@
 /*
 	Snake
+
+	TODO: should convert all references to x/y to row/col.
 */
 define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, KeyboardJS) {
 
 	var Snake = function(options) {
 		var _this = this;
-		var game = options.game;
 
+		var game = options.game;
 		var stage = options.stage;
 
 		var directions = {
@@ -27,10 +29,14 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		var timer = 0;
 
 		var numPieces = 1;
-		var hasNewTail = false;
 
 		_this.direction = directions.right;
 		_this.requestedDir = _this.direction;
+
+		// retained here instead of the game because we could have 2 snakes.
+		_this.score = 0;
+
+
 
 		/*
 		 */
@@ -149,8 +155,6 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			}
 
 			numPieces += numToAdd;
-
-			hasNewTail = true;
 		};
 
 		/*
@@ -228,6 +232,8 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			return ateSelf;
 		};
 
+		/*
+		*/
 		var moveHoriz = function(dir) {
 
 			if( didEatSelf(sprites.yCells[0], sprites.xCells[0] + dir) ){
@@ -241,8 +247,6 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				// cut off the end
 				sprites.xCells.length = numPieces;
 				sprites.yCells.length = numPieces;
-
-				hasNewTail = false;
 			}
 		};
 
@@ -261,8 +265,6 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 				// cut off the end
 				sprites.xCells.length = numPieces;
 				sprites.yCells.length = numPieces;
-
-				hasNewTail = false;
 			}
 		};
 
