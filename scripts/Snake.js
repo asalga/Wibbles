@@ -86,9 +86,9 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 		this.setupControls = function() {
 
 			KeyboardJS.on('up', function(e) {
-				if(e.key === 'Up'){
+				if(e.keyCode === 38){
 					if (_this.direction !== directions.down) {
-						_this.requestedDir = e.key.toLowerCase();
+						_this.requestedDir = 'up';
 					}
 					return false;
 				}
@@ -96,7 +96,7 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 
 			// 
 			KeyboardJS.on('down', function(e) {
-				if(e.key === 'Down'){
+				if(e.keyCode === 40){
 					if (_this.direction !== directions.up){
 						_this.requestedDir = 'down';
 					}
@@ -105,18 +105,18 @@ define('Snake', ['settings', 'PIXI', 'KeyboardJS'], function(settings, PIXI, Key
 			});
 
 			KeyboardJS.on('left', function(e) {
-				if(e.key === 'Left'){
+				if(e.keyCode === 37){
 					if (_this.direction !== directions.right ){
-						_this.requestedDir = e.key.toLowerCase();
+						_this.requestedDir = 'left';
 					}
 					return false;
 				}
 			});
 
 			KeyboardJS.on('right', function(e) {
-				if(e.key === 'Right'){
+				if(e.keyCode === 39){
 					if (_this.direction !== directions.left) {
-						_this.requestedDir = e.key.toLowerCase();
+						_this.requestedDir = 'right';
 					}
 					return false;
 				}
