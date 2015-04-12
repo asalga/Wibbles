@@ -64,7 +64,13 @@ define('Board', ['ImageLevelLoader', 'PIXI', 'settings', 'boardMetaData'],
 			return startingRowColum;
 		};
 
+		/*
+		*/
 		this.getCell = function(row, col) {
+			if(boardData[row][col] === undefined){
+				console.log('row: ' + row);
+				console.log('col: ' + col);
+			}
 			return boardData[row][col];
 		};
 
