@@ -9,7 +9,7 @@ define('settings', {
 	godMode: false,
 	numLives: 4,
 	blocksPerSecond: 16,
-	foodPerLevel: 3,
+	foodPerLevel: 1,
 
 	blockSize: 1,
 	boardColumns: 80,
