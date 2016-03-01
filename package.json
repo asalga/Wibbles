@@ -1,24 +1,37 @@
 {
-  "name": "Wibbles",
-  "version": "0.0.1",
-  "description": "Clone of Nibbles",
-  "main": "Gruntfile.js",
+  "name": "wibbles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/asalga/Wibbles.git"
+    "url": "git+https://github.com/asalga/Wibbles.git"
   },
-  "author": "Andor",
-  "license": "???",
+  "author": "",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/asalga/Wibbles/issues"
   },
+  "homepage": "https://github.com/asalga/Wibbles#readme",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^4.0.1",
+    "grunt-connect": "^0.2.0",
+    "grunt-contrib": "^0.11.0",
+    "grunt-contrib-connect": "^0.11.2",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "load-grunt-tasks": "^3.4.1",
+    "watch": "^0.17.1"
+  },
   "dependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-uglify": "~0.7.0",
-    "grunt-contrib-jshint": "~0.11.0",
-    "grunt-contrib-less": "~1.0.0"
+    "detect-dom-ready": "^1.0.2",
+    "dom-select": "^1.1.0",
+    "keyboardjs": "^2.2.0",
+    "lodash": "^4.5.1",
+    "pixi": "^0.3.1"
   }
 }
