@@ -42,26 +42,41 @@ module.exports = function(grunt) {
     // COPY
     copy: {
       'dev': {
-        'files': [
-        {
-          'expand': true,
-          'cwd': '<%= config.assets %>/images/',
-          'src': ['**'],
-          'dest': '<%= config.dev %>/assets/images/'
-        }, {
-          'expand': true,
-          'cwd': './css/',
-          'src': ['**'],
-          'dest': '<%= config.dev %>/'
-        },
+        'files': [{
+            'expand': true,
+            'cwd': '<%= config.assets %>/images/',
+            'src': ['**'],
+            'dest': '<%= config.dev %>/assets/images/'
+          }, {
+            'expand': true,
+            'cwd': './css/',
+            'src': ['**'],
+            'dest': '<%= config.dev %>/'
+          },
 
-        // LEVELS
-        {
-          'expand': true,
-          'cwd': '<%= config.assets %>/levels/',
-          'src': ['**'],
-          'dest': '<%= config.dev %>/assets/levels/'
-        },
+          // LEVELS
+          {
+            'expand': true,
+            'cwd': '<%= config.assets %>/levels/',
+            'src': ['**'],
+            'dest': '<%= config.dev %>/assets/levels/'
+          },
+
+          // FONT
+          {
+            'expand': true,
+            'cwd': '<%= config.assets %>/font/',
+            'src': ['**'],
+            'dest': '<%= config.dev %>/assets/font/'
+          },
+
+          // AUDIO
+          {
+            'expand': true,
+            'cwd': '<%= config.assets %>/audio/',
+            'src': ['**'],
+            'dest': '<%= config.dev %>/assets/audio/'
+          },
         ]
       }
     },
@@ -93,7 +108,6 @@ module.exports = function(grunt) {
     'watch'
   ]);
   grunt.registerTask('release', [
-
     'uglify',
     //'compress'
   ]);

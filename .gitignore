@@ -1,4 +1,5 @@
 .DS_Store
 reference/
 node_modules/
-dist/
+app/
+

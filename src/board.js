@@ -1,6 +1,6 @@
 'use strict';
 
-var PIXI = require('pixi');
+var PIXI = require('pixi.js');
 
 var settings = require('./settings');
 var BoardMetaData = require('./boardMetaData');
@@ -37,10 +37,8 @@ Board.prototype = {
     this.imageLevelLoader = new ImageLevelLoader();
     this.imageLevelLoader.load({
       levelPath: this.boardToLoad,
-      /// fix bind
       done: this.imageLoaderDone.bind(this)
     });
-
 
     // Hold onto the references so we can remove them from the stage when needed.
     this.sprites = [];
@@ -61,6 +59,7 @@ Board.prototype = {
           sprite.position.y = r;
 
           this.stage.addChild(sprite);
+          window.stage = this.stage;
 
           // keep references so we can remove them when we unload the level.
           this.sprites.push(sprite);
@@ -75,16 +74,15 @@ Board.prototype = {
     this.doneCallBack();
   },
 
-
   load: function(options) {
-    for (var i = 0; i < sprites.length; i++) {
-      stage.removeChild(sprites[i]);
+    for (var i = 0; i < this.sprites.length; i++) {
+      stage.removeChild(this.sprites[i]);
     }
-    sprites = [];
+    this.sprites = [];
 
-    imageLevelLoader.load({
+    this.imageLevelLoader.load({
       levelPath: options.board,
-      done: imageLoaderDone.bind(this)
+      done: this.imageLoaderDone.bind(this)
     });
   },
 
@@ -93,11 +91,10 @@ Board.prototype = {
     that are out of bounds...
   */
   getCell: function(row, col) {
-    if (boardData[row][col] === undefined) {
-      console.log('row: ' + row);
-      console.log('col: ' + col);
+    if (this.boardData[row][col] === undefined) {
+      console.log('row, col ', row, col);
     }
-    return boardData[row][col];
+    return this.boardData[row][col];
   },
 
   getStartingPosition: function() {

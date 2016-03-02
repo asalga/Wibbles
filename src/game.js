@@ -1,14 +1,19 @@
 'use strict';
 
 var _ = require('lodash');
-var KeyboardJS = require('KeyboardJS');
+var KeyboardJS = require('keyboardJS');
 
 var settings = require('./settings');
 var Board = require('./board');
-var levels = require('./levels')
+var Snake = require('./snake');
+var Hud = require('./hud');
+var Food = require('./food');
+var Utils = require('./utils');
+var SoundManager = require('./soundManager').instance;
 
 function Game(opts) {
   this.opts = opts || {};
+  _.defaults(this, opts);
 }
 
 Game.prototype = {
@@ -17,86 +22,105 @@ Game.prototype = {
   init: function(opts) {
     console.log('Game init');
 
-    var _this = this;
-
     this.snakes = [];
     this.board = null;
     this.food = null;
-    this.hud;
 
     this.ready = false;
     this.isPaused = false;
 
-    this.stage = this.opts.stage;
-
     this.foodEatenInLevel = 0;
     this.currentLevel = 0;
 
-    // hud = new Hud({stage: stage});
+    this.hud = new Hud({
+      stage: this.stage
+    });
+    this.hud.init();
 
-    // snake = new Snake({
-    //     stage: stage,
-    //     length: 10,
-    //     game: _this
-    // });
-
-
-    this.board = new Board({
-        stage: this.stage,
-        done: function(){_this.start();},
-        board: levels.levelData[this.currentLevel]
+    this.snake = new Snake({
+      stage: this.stage,
+      length: 10,
+      game: this
     });
 
-    // food = new Food({stage: stage, score: 0});
+    this.board = new Board({
+      stage: this.stage,
+      done: function() {
+        this.boardLoaded();
+      }.bind(this),
+      board: settings.levelData[this.currentLevel]
+    });
 
-    // this.addSnake(snake);
-    // this.addFood(food);
-
-    // soundManager = SoundManager.getInstance();
+    this.food = new Food({
+      stage: this.stage,
+      score: 0
+    });
+    this.addSnake(this.snake);
+    this.addFood(this.food);
 
     this.initGameKeys();
+    this.setupControls();
+  },
+
+  setupControls: function() {
+    KeyboardJS.on('g', function(e) {
+      settings.godMode = !settings.godMode;
+
+      if (settings.godMode) {
+        var invertFilter = new PIXI.filters.InvertFilter();
+        this.stage.filters = [invertFilter];
+        document.body.style.backgroundColor = '#FFFF00';
+        this.renderer.backgroundColor = 0xFFFF44;
+      } else {
+        document.body.style.backgroundColor = settings.bgColorHTML;
+        this.renderer.backgroundColor = settings.bgColor;
+        this.stage.filters = null;
+      }
+      return false;
+    }.bind(this));
   },
 
   initGameKeys: function() {
     KeyboardJS.on('p', function() {
       this.isPaused = !this.isPaused;
       return false;
-    });
+    }.bind(this));
   },
 
   update: function(delta) {
-    // if (ready === false) {
-    //   return;
-    // }
+    if (this.ready === false) {
+      return;
+    }
 
     if (this.isPaused) {
       return;
     }
 
-    // _.each(snakes, function(s) {
-    //   s.update(delta);
+    _.each(this.snakes, function(s) {
+      s.update(delta);
+    });
 
-    // });
+    this.snake.setVisible(false);
 
-    // snake.setVisible(false);
+    this.checkWallCollisions();
+    this.checkSnakeEatFood();
+  },
 
-    // checkWallCollisions();
-    // checkSnakeEatFood();
+  resetLevel: function() {
+    this.boardLoaded();
   },
 
   /*
-            Called when board has been loaded
-*/
-  start: function() {
+    Called when board has been loaded
+  */
+  boardLoaded: function() {
     this.ready = true;
     this.isPaused = false;
 
     var startingPosition = this.board.getStartingPosition();
-
-    // console.log(startingPosition);
-    // snake.setBirthLocation(startingPosition.row, startingPosition.column);
-    // snake.setDir('right');
-    // setFoodRandomPos();
+    this.snake.setBirthLocation(startingPosition.row, startingPosition.column);
+    this.snake.setDir('right');
+    this.setFoodRandomPos();
   },
 
   getIsPaused: function() {
@@ -104,220 +128,143 @@ Game.prototype = {
   },
 
   addSnake: function(s) {
-    snakes.push(s);
+    this.snakes.push(s);
   },
 
   addFood: function(f) {
-    food = f;
+    this.food = f;
   },
+
+  checkWallCollisions: function() {
+
+    if (settings.godMode) {
+      return;
+    }
+
+    if (this.snakes.length === 0) {
+      return;
+    }
+
+    var snakeHeadCol = this.snakes[0].getHeadCellX();
+    var snakeHeadRow = this.snakes[0].getHeadCellY();
+
+    if (this.board.getCell(snakeHeadRow, snakeHeadCol) === 'wall') {
+      this.resetLevel();
+    }
+  },
+
+  /*
+      After updating the snake position, check if the
+      snake head has overlapped with the food.
+
+      TODO: change to return Boolean?
+  */
+  checkSnakeEatFood: function() {
+
+    // TODO: why are we checking for snakes.length?
+    if (this.food === null || this.snakes.length === 0) {
+      return;
+    }
+
+    var snakeHeadCol = this.snakes[0].getHeadCellX();
+    var snakeHeadRow = this.snakes[0].getHeadCellY();
+
+    // TODO: fix getCellX => getCellCol
+    // We totally ate some food.
+    if (snakeHeadCol === this.food.getColumn() && snakeHeadRow === this.food.getRow()) {
+
+      this.foodEatenInLevel++;
+      SoundManager.play('eat');
+      this.snake.score += this.food.score;
+      this.hud.setScore(this.snake.score);
+
+      // We just found out the snake ate something.
+      // - play sound
+      // - check if next level needs to load
+      // - update hud
+      // - fire event?
+      if (this.foodEatenInLevel < settings.foodPerLevel) {
+        this.setFoodRandomPos();
+
+        // TODO: what should this be?
+        this.snake.grow(4);
+      } else {
+        this.loadNextLevel();
+      }
+    }
+  },
+
+  /*
+      When finding a random position for the food,
+      make sure we don't place it on top of a wall.
+  */
+  doesOverlapWithWalls: function(row, col) {
+    return this.board.getCell(row, col) === 'wall';
+  },
+
+  /*
+      @return true if the given row and column overlaps
+      with any part of the snake.
+  */
+  doesOverlapWithSnake: function(row, col) {
+    var iter = this.snake.getPositionIterator();
+
+    while (iter.hasNext()) {
+      var i = iter.getNext();
+
+      if (i.x === col && i.y === row) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  loadNextLevel: function() {
+    this.currentLevel++;
+    if (this.currentLevel > settings.levelData.length - 1) {
+      this.currentLevel = 0;
+    }
+
+    this.foodEatenInLevel = 0;
+
+    this.snake.reset();
+    this.snake.setVisible(false);
+
+    this.isPaused = true;
+
+    this.board.load({
+      board: settings.levelData[this.currentLevel],
+      done: function() {
+        game.boardLoaded();
+        //isPaused = false;
+      }
+    });
+  },
+
+  /*
+      Find a place on the board that isn't a wall,
+      or part of the snake
+  */
+  setFoodRandomPos: function() {
+
+    var col, row;
+    var overlapsWithSnake;
+    var overlapsWithWall;
+
+    do {
+      // 0,1 is hud area, 2 is the top of the board border
+      // [min, max)
+      row = Utils.getRandomInt(3, settings.boardRows - 1);
+      col = Utils.getRandomInt(0, settings.boardColumns);
+
+      overlapsWithSnake = this.doesOverlapWithSnake(row, col);
+      overlapsWithWall = this.doesOverlapWithWalls(row, col);
+    } while (overlapsWithSnake === true || overlapsWithWall === true);
+
+    this.food.setGridPosition(col, row);
+    this.food.score += 100;
+  }
 }
 
 module.exports = Game;
-
-
-/*
-    Game
-
-define('Game', ['underscore', 'Board', 'Snake', 'Hud', 'Food', 'settings', 'SoundManager', 'KeyboardJS', 'levels'],
-       function(_, Board, Snake, Hud, Food, settings, SoundManager, KeyboardJS, levels) {
-
-    var Game = function(options) {
-        var _this = this;
-
-        var snakes = [];
-        var board = null;
-        var food = null;
-        var hud;
-
-        var ready = false;
-        var isPaused = false;
-
-        var stage = options.stage;
-        var soundManager;
-
-        var foodEatenInLevel = 0;
-        var currentLevel = 0;
-
-
-
-
-        this.init = function(){
-
-            hud = new Hud({stage: stage});
-
-            snake = new Snake({
-                stage: stage,
-                length: 10,
-                game: _this
-            });
-
-            board = new Board({
-                stage: stage,
-                done: function(){_this.start();},
-                board: levels.levelData[currentLevel]
-            });
-
-            food = new Food({stage: stage, score: 0});
-
-            this.addSnake(snake);
-            this.addFood(food);
-
-            soundManager = SoundManager.getInstance();
-
-            this.initGameKeys();
-        };
-
-
-
-
-        /*
-
-        this.resetLevel = function() {
-            _this.start();
-        };
-
-        /*
-            After updating the snake position, check if the
-            snake head has overlapped with the food.
-
-            TODO: change to return Boolean?
-
-        var checkSnakeEatFood = function(){
-
-            // TODO: why are we checking for snakes.length?
-            if(food === null || snakes.length === 0){
-                return;
-            }
-
-            var snakeHeadCol = snakes[0].getHeadCellX();
-            var snakeHeadRow = snakes[0].getHeadCellY();
-
-            // TODO: fix getCellX => getCellCol
-            // We totally ate some food.
-            if(snakeHeadCol === food.getColumn() && snakeHeadRow === food.getRow()){
-
-                foodEatenInLevel++;
-                soundManager.play('eat');
-                snake.score += food.score;
-                hud.setScore(snake.score);
-
-                /// We just found out the snake ate something.
-                // - play sound
-                // - check if next level needs to load
-                // - update hud
-                // - fire event?
-
-                if(foodEatenInLevel < settings.foodPerLevel){
-                    setFoodRandomPos();
-
-                    // TODO: what should this be?
-                    snake.grow(4);
-                }
-                else{
-                    loadNextLevel();
-                }
-            }
-        };
-
-        /*
-
-
-        var loadNextLevel = function(){
-            currentLevel++;
-            if(currentLevel > levels.levelData.length-1){
-                currentLevel = 0;
-            }
-
-            foodEatenInLevel = 0;
-
-            snake.reset();
-            snake.setVisible(false);
-
-            isPaused = true;
-
-            board.load({
-                board: levels.levelData[currentLevel],
-                done: function(){
-                    game.start();
-
-                    //isPaused = false;
-                }
-            });
-        };
-
-        /*
-            @return true if the given row and column overlaps
-            with any part of the snake.
-
-        var doesOverlapWithSnake = function(row, col){
-            var iter = snake.getPositionIterator();
-
-            while(iter.hasNext()){
-                var i = iter.getNext();
-
-                if(i.x === col && i.y === row){
-                    return true;
-                }
-            }
-
-            return false;
-        };
-
-        /*
-            When finding a random position for the food,
-            make sure we don't place it on top of a wall.
-
-        var doesOverlapWithWalls = function(row, col){
-            return board.getCell(row, col) === 'wall';
-        };
-
-        /*
-            TODO: move to a utils class
-
-        var getRandomInt = function(min, max){
-            return Math.floor(Math.random() * (max - min) + min);
-        };
-
-        /*
-            Find a place on the board that isn't a wall,
-            or part of the snake
-
-        var setFoodRandomPos = function(){
-
-            var col, row;
-            var overlapsWithSnake;
-            var overlapsWithWall;
-
-            do{
-                // 0,1 is hud area, 2 is the top of the board border
-                // [min, max)
-                row = getRandomInt(3, settings.boardRows - 1);
-                col = getRandomInt(0, settings.boardColumns);
-
-                overlapsWithSnake = doesOverlapWithSnake(row, col);
-                overlapsWithWall = doesOverlapWithWalls(row, col);
-            } while(overlapsWithSnake === true || overlapsWithWall === true);
-
-            food.setGridPosition(col, row);
-            food.score += 100;
-        };
-
-        /*
-
-        var checkWallCollisions = function() {
-
-            if(snakes.length === 0){
-                return;
-            }
-
-            var snakeHeadCol = snakes[0].getHeadCellX();
-            var snakeHeadRow = snakes[0].getHeadCellY();
-
-            if (board.getCell(snakeHeadRow, snakeHeadCol) === 'wall') {
-                _this.resetLevel();
-            }
-        };
-    };
-
-    return Game;
-});*/

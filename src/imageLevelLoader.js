@@ -12,7 +12,6 @@ function ImageLevelLoader() {}
 ImageLevelLoader.prototype = {
   constructor: ImageLevelLoader,
 
-  test: function() {},
   isColor: function(r1, g1, b1, r2, g2, b2) {
     return (r1 === r2 && g1 === g2 && b1 === b2);
   },
@@ -45,14 +44,13 @@ ImageLevelLoader.prototype = {
       var context = canvas.getContext('2d');
       context.drawImage(this, 0, 0);
 
-      //
       var returnedData = new Array(this.height);
 
       for (var i = 0; i < this.height; i++) {
         returnedData[i] = new Array(this.width);
       }
 
-      // order is RGBA
+      // order: RGBA
       // clampedUint8  [255, 64, 64, 255,      255, 64, ......]
       var rawDataFlat = context.getImageData(0, 0, this.width, this.height).data;
 
@@ -66,11 +64,10 @@ ImageLevelLoader.prototype = {
           x = 0;
         }
 
-
         var r = rawDataFlat[colIdx + 0];
         var g = rawDataFlat[colIdx + 1];
         var b = rawDataFlat[colIdx + 2];
-        // alpha is not used
+        // alpha not used
 
         // TODO: fix
         if (_this.isWall(r, g, b)) {

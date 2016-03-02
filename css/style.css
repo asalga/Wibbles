@@ -1,18 +1,13 @@
-/*
-	Andor Salga
-*/
-
 * {
 	margin: 0;
 }
 
 body,html {
-	background-color: #000000;
-	overflow: hidden;	
+	background-color: #0000AA;
+	overflow: hidden;
 }
 
 canvas {
-	
     position: absolute;
     top:0;
     bottom: 0;
