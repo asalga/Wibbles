@@ -23,6 +23,8 @@ function Snake(opts) {
 
   this.init(opts.length || 1);
   this.setupControls();
+
+  this.keyQueue = [];
 }
 
 Snake.prototype = {
@@ -119,11 +121,16 @@ Snake.prototype = {
 
     this.timer = 0;
 
-    if (this.requestedDir !== null) {
-
+    /*if (this.requestedDir !== null) {
       this.direction = this.requestedDir;
       this.requestedDir = null;
       console.log('requestedDIR: ', this.direction);
+    }*/
+
+    if (this.keyQueue.length > 0) {
+      console.log('key queue: ', this.keyQueue);
+      this.direction = this.keyQueue.shift();
+
     }
 
     switch (this.direction) {
@@ -203,19 +210,31 @@ Snake.prototype = {
     console.log(this.sprites.piecesOfSnake[0]);
 
     KeyboardJS.on('up', function(e) {
+      console.log('up');
       if (e.keyCode === 38) {
-        if (this.direction !== directions.down) {
-          this.requestedDir = 'up';
+        // if (this.direction !== directions.down) {
+        //   this.queueKey('up');
+        // }
+
+        if (this.direction !== directions.down ||
+          (this.keyQueue.length > 0 && this.keyQueue[0] === 'left' || this.keyQueue[0] === 'right')) {
+          this.queueKey('up');
         }
+
         return false;
       }
     }.bind(this));
 
+    // For each key:
+    // User can never immediately go opposite to where
+    // they are currently going
+    // Queue added to properly make hairpin turns
+
     KeyboardJS.on('down', function(e) {
       if (e.keyCode === 40) {
-        console.log('down');
-        if (this.direction !== directions.up) {
-          this.requestedDir = 'down';
+        if (this.direction !== directions.up ||
+          (this.keyQueue.length > 0 && this.keyQueue[0] === 'left' || this.keyQueue[0] === 'right')) {
+          this.queueKey('down');
         }
         return false;
       }
@@ -223,10 +242,10 @@ Snake.prototype = {
 
     KeyboardJS.on('left', function(e) {
       if (e.keyCode === 37) {
-
-        if (this.direction !== directions.right) {
-          console.log('left');
-          this.requestedDir = 'left';
+        console.log('left');
+        if (this.direction !== directions.right ||
+          (this.keyQueue.length > 0 && this.keyQueue[0] === 'up' || this.keyQueue[0] === 'down')) {
+          this.queueKey('left');
         }
         return false;
       }
@@ -234,8 +253,13 @@ Snake.prototype = {
 
     KeyboardJS.on('right', function(e) {
       if (e.keyCode === 39) {
-        if (this.direction !== directions.left) {
-          this.requestedDir = 'right';
+        console.log('right');
+        // if (this.direction !== directions.left) {
+        //   this.queueKey('right');
+        // }
+        if (this.direction !== directions.left ||
+          (this.keyQueue.length > 0 && this.keyQueue[0] === 'up' || this.keyQueue[0] === 'down')) {
+          this.queueKey('right');
         }
         return false;
       }
@@ -247,6 +271,29 @@ Snake.prototype = {
       }
       return false;
     }.bind(this));
+  },
+
+  queueKey: function(k) {
+    // Don't queue up direction keys when user is already going in that direction.
+    // By preventing queueing up diretion being same as k,
+    // we allow user to immediately change direction even if they
+    // were pressing another key many times.
+
+    if (this.keyQueue.length < 2) {
+      this.keyQueue.push(k);
+    }
+
+    // Prevent two of the same key
+    if (this.keyQueue.length === 2 && this.keyQueue[0] === this.keyQueue[1]) {
+      this.keyQueue.shift();
+    }
+
+    // Swap if it makes sense to
+    if (this.keyQueue.length === 2 && this.keyQueue[0] === this.direction) {
+      var temp = this.keyQueue[0];
+      this.keyQueue[0] = this.keyQueue[1];
+      this.keyQueue[1] = temp;
+    }
   },
 
   grow: function(numToAdd) {

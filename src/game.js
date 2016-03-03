@@ -75,7 +75,7 @@ Game.prototype = {
       if (settings.godMode) {
         var invertFilter = new PIXI.filters.InvertFilter();
         this.stage.filters = [invertFilter];
-        document.body.style.backgroundColor = '#FFFF00';
+        document.body.style.backgroundColor = '#FFFF44';
         this.renderer.backgroundColor = 0xFFFF44;
       } else {
         document.body.style.backgroundColor = settings.bgColorHTML;

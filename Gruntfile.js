@@ -18,7 +18,7 @@ module.exports = function(grunt) {
       'dev': {
         'options': {
           //'<%= config.dev %>/',
-          'base': ['app/', '*'],
+          'base': ['./', '*'],
           'keepalive': false,
           'hostname': '0.0.0.0'
         }

@@ -15,12 +15,12 @@ Main.prototype = {
     this.lastTime = Date.now();
     this.now = this.lastTime;
 
-    var viewWidth = this.viewWidth = settings.boardColumns;
-    var viewHeight = this.viewHeight = settings.boardRows;
+    this.viewWidth = settings.boardColumns;
+    this.viewHeight = settings.boardRows;
 
     var stage = this.stage = new PIXI.Container();
 
-    var renderer = this.renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight, null, false, false);
+    var renderer = this.renderer = PIXI.autoDetectRenderer(this.viewWidth, this.viewHeight, null, false, false);
     renderer.backgroundColor = settings.bgColor;
     document.body.appendChild(renderer.view);
 
