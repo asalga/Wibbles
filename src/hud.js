@@ -2,8 +2,16 @@
 
 var PIXI = require('pixi.js');
 
+var Utils = require('./utils');
+var emitters = require('./emitters');
+
+
 function Hud(opts) {
   this.stage = opts.stage;
+  this.ready = false;
+
+  // should be here or ask from game?
+  this.score = 0;
 }
 
 Hud.prototype = {
@@ -19,7 +27,16 @@ Hud.prototype = {
     PIXI.loader.add("Font1", 'assets/font/font.fnt')
       .once("complete", function() {
         this.addText();
+        this.ready = true;
       }.bind(this)).load();
+
+    this.setupEvents();
+  },
+
+  setupEvents: function() {
+    emitters.on('ateFood', function(foodScore) {
+      this.addScore(foodScore);
+    }.bind(this));
   },
 
   addText: function() {
@@ -36,32 +53,22 @@ Hud.prototype = {
     stage.addChild(this.scoreText);
 
     this.scoreText = new PIXI.BitmapText("000000", this.font);
-    this.scoreText.position = new PIXI.Point(73,0);
+    this.scoreText.position = new PIXI.Point(73, 0);
     stage.addChild(this.scoreText);
   },
 
-  /*
-      TODO: fix, allow settings score for more than snake
-  */
-  setScore: function(value) {
-    this.scoreText.text = this.formatScore(value);
-    this.scoreText.dirty = true;
+  addScore: function(value) {
+    this.score += value;
+    this.scoreText.text = Utils.addLeadingZeros(this.score, 6);
+    // this.sammyText.tint = 0x00FF00;
   },
 
-  /*
-      in:  123
-      out: "000123"
-
-      TODO:   fix literal 6 move to utils
-  */
-  formatScore: function(value) {
-    var strValue = value.toString();
-
-    while (strValue.length < 6) {
-      strValue = '0' + strValue;
+  update: function(delta) {
+    if (!this.ready) {
+      return;
     }
-
-    return strValue;
+    // this.sammyText.tint += 1000000;
+    // this.sammyText.tint = _.clamp(this.sammyText.tint, 16777215);
   }
 };
 

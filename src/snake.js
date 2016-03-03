@@ -5,6 +5,7 @@ var PIXI = require('pixi.js');
 var _ = require('lodash');
 
 var settings = require('./settings');
+var emitters = require('./emitters');
 
 var directions = {
   'up': 'up',
@@ -55,6 +56,12 @@ Snake.prototype = {
 
       this.stage.addChild(this.sprites.piecesOfSnake[i]);
     }
+
+    this.setupEvents();
+  },
+
+  setupEvents: function() {
+    emitters.on('ateFood', function(foodScore) {}.bind(this));
   },
 
   /*
@@ -113,8 +120,10 @@ Snake.prototype = {
     this.timer = 0;
 
     if (this.requestedDir !== null) {
+
       this.direction = this.requestedDir;
       this.requestedDir = null;
+      console.log('requestedDIR: ', this.direction);
     }
 
     switch (this.direction) {
@@ -142,6 +151,8 @@ Snake.prototype = {
     var sprites = this.sprites;
 
     if (this.didEatSelf(sprites.yCells[0], sprites.xCells[0] + dir)) {
+
+      // emitters.emit('ateSelf')
       this.game.resetLevel();
 
     } else {
@@ -202,6 +213,7 @@ Snake.prototype = {
 
     KeyboardJS.on('down', function(e) {
       if (e.keyCode === 40) {
+        console.log('down');
         if (this.direction !== directions.up) {
           this.requestedDir = 'down';
         }
@@ -211,7 +223,9 @@ Snake.prototype = {
 
     KeyboardJS.on('left', function(e) {
       if (e.keyCode === 37) {
+
         if (this.direction !== directions.right) {
+          console.log('left');
           this.requestedDir = 'left';
         }
         return false;

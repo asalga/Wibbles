@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var KeyboardJS = require('keyboardJS');
 
+var emitters = require('./emitters');
 var settings = require('./settings');
 var Board = require('./board');
 var Snake = require('./snake');
@@ -63,9 +64,14 @@ Game.prototype = {
   },
 
   setupControls: function() {
+    KeyboardJS.on('e', function(e) {
+      if (e.keyCode === 'e') {
+        emitters.emit('test');
+      }
+    }.bind(this));
+
     KeyboardJS.on('g', function(e) {
       settings.godMode = !settings.godMode;
-
       if (settings.godMode) {
         var invertFilter = new PIXI.filters.InvertFilter();
         this.stage.filters = [invertFilter];
@@ -99,6 +105,8 @@ Game.prototype = {
     _.each(this.snakes, function(s) {
       s.update(delta);
     });
+
+    this.hud.update(delta);
 
     this.snake.setVisible(false);
 
@@ -156,8 +164,6 @@ Game.prototype = {
   /*
       After updating the snake position, check if the
       snake head has overlapped with the food.
-
-      TODO: change to return Boolean?
   */
   checkSnakeEatFood: function() {
 
@@ -168,29 +174,28 @@ Game.prototype = {
 
     var snakeHeadCol = this.snakes[0].getHeadCellX();
     var snakeHeadRow = this.snakes[0].getHeadCellY();
+    var foodCol = this.food.getColumn();
+    var foodRow = this.food.getRow();
 
     // TODO: fix getCellX => getCellCol
     // We totally ate some food.
-    if (snakeHeadCol === this.food.getColumn() && snakeHeadRow === this.food.getRow()) {
+    if (snakeHeadCol === foodCol && snakeHeadRow === foodRow) {
+      this.ateFood();
+    }
+  },
 
-      this.foodEatenInLevel++;
-      SoundManager.play('eat');
-      this.snake.score += this.food.score;
-      this.hud.setScore(this.snake.score);
+  ateFood: function() {
+    SoundManager.play('eat');
+    this.foodEatenInLevel++;
+    emitters.emit('ateFood', this.food.score);
 
-      // We just found out the snake ate something.
-      // - play sound
-      // - check if next level needs to load
-      // - update hud
-      // - fire event?
-      if (this.foodEatenInLevel < settings.foodPerLevel) {
-        this.setFoodRandomPos();
+    if (this.foodEatenInLevel < settings.foodPerLevel) {
+      this.setFoodRandomPos();
 
-        // TODO: what should this be?
-        this.snake.grow(4);
-      } else {
-        this.loadNextLevel();
-      }
+      // TODO: what should this be?
+      this.snake.grow(4);
+    } else {
+      this.loadNextLevel();
     }
   },
 
